@@ -3,9 +3,12 @@ package com.example.robert.demo_1;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+    final static String TAG = "MainActivity";
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -30,4 +33,9 @@ public class MainActivity extends AppCompatActivity {
      * which is packaged with this application.
      */
     public native String stringFromJNI();
+
+    public void sendMessage(View view){
+        Log.d(TAG,"cqd, sendMessage");
+
+    }
 }
