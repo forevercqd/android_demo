@@ -1,0 +1,13 @@
+outDemo/
+pro/
+.akconfig
+.gradle-build/
+.gradle/
+.idea/
+local.properties
+*.iml
+*.DS_Store
+*.externalNativeBuild
+*/*.iml
+*.iml
+*/*/*.iml
