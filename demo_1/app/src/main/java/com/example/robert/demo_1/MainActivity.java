@@ -2,10 +2,14 @@ package com.example.robert.demo_1;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 public class MainActivity extends AppCompatActivity {
     final static String TAG = "MainActivity";
@@ -36,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendMessage(View view){
         Log.d(TAG,"cqd, sendMessage");
+        Intent intent = new Intent(this, DisplayMessageActivity.class);
+        TextView editText = (TextView) findViewById(R.id.sample_text);
+        String message = editText.getText().toString();
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
 
     }
 }
