@@ -40,7 +40,7 @@ public class ShaderHelper {
     if (compileStatus[0] == 0) {
       GLES20.glDeleteShader(shaderObjectId);
       if (LoggerConfig.ON) {
-        Log.w(TAG, "Compilation of shader failed");
+        Log.e(TAG, "Compilation of shader failed");
       }
     }
     return shaderObjectId;
@@ -53,7 +53,15 @@ public class ShaderHelper {
     }
 
     GLES20.glAttachShader(programObjectId, vertexShaderId); // setp.6 绑定Program与Shader
+    if (LoggerConfig.ON) {
+      Log.v(TAG, "cqd, Results of glAttachShader, vertexShaderId:\n" + GLES20.glGetProgramInfoLog(programObjectId));
+    }
+
     GLES20.glAttachShader(programObjectId, fragmentShaderId);
+    if (LoggerConfig.ON) {
+      Log.v(TAG, "Results of glAttachShader, fragmentShaderId:\n" + GLES20.glGetProgramInfoLog(programObjectId));
+    }
+
 
     GLES20.glLinkProgram(programObjectId);  // step.7 链接Program
 

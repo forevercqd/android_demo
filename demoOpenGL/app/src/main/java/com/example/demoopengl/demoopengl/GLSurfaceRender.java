@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Shader;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 import com.example.demoopengl.demoopengl.util.LoggerConfig;
 import com.example.demoopengl.demoopengl.util.ShaderHelper;
@@ -23,8 +24,12 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
     private static final int BYTES_PER_FLOAT = 4;
     private int program;
 
+    private static final String U_COLOR = "u_Color";
+    private static final String A_POSITION = "a_Position";
     int aPostionLocation;
     int uColorLocation;
+
+    private final String TAG = "GLSurfaceRender";
 
     private static int POSITION_COMOPNENT_COUNT = 2;
     float [] tableVertices = {
@@ -51,7 +56,7 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
         String fragmentShaderSource = TextResourceReader.readTextFileFromResource(context, R.raw.simple_fragment_shader);
 
         int vertexShader = ShaderHelper.compileVertexShader(vertexShaderSource);
-        int fragmentShader = ShaderHelper.compileVertexShader(fragmentShaderSource);
+        int fragmentShader = ShaderHelper.compileFragmentShader(fragmentShaderSource);
 
         program = ShaderHelper.linkProgram(vertexShader, fragmentShader);
         if (LoggerConfig.ON) {
@@ -59,9 +64,10 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
         }
 
 
-        GLES20.glUseProgram(program);
-        aPostionLocation = GLES20.glGetAttribLocation(program, "a_Position");
-        uColorLocation = GLES20.glGetUniformLocation(program, "u_Color");
+        GLES20.glUseProgram(program); // a_Position
+        uColorLocation = GLES20.glGetUniformLocation(program, U_COLOR);
+        aPostionLocation = GLES20.glGetAttribLocation(program, A_POSITION);
+
 
         vertexData.position(0);
         GLES20.glVertexAttribPointer(aPostionLocation, POSITION_COMOPNENT_COUNT, GLES20.GL_FLOAT,
