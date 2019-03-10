@@ -32,10 +32,34 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
     private final String TAG = "GLSurfaceRender";
 
     private static int POSITION_COMOPNENT_COUNT = 2;
-    float [] tableVertices = {
-            0.0f, 0.0f,
-            1.0f, 1.0f,
-            1.0f, 0f
+//    float [] tableVertices = {
+//            0.0f, 0.0f,
+//            1.0f, 1.0f,
+//            1.0f, 0f
+//    };
+
+    float[] tableVertices = {
+            -0.5f, -0.5f,
+            0.5f, 0.5f,
+            -0.5f, 0.5f,
+
+            -0.5f, -0.5f,
+            0.5f, -0.5f,
+            0.5f, 0.5f,
+
+            -0.5f, 0f,
+            0.5f, 0f,
+
+            0f, -0.25f,
+            0f, 0.25f,
+
+            -0.6f, -0.6f,
+            0.6f, 0.6f,
+            -0.6f, 0.6f,
+
+            -0.6f, -0.6f,
+            0.6f, -0.6f,
+            0.6f, 0.6f,
     };
 
     public GLSurfaceRender(Context context){
@@ -49,7 +73,7 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
-        GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         // 获取shader文件名
         String vertexShaderSource = TextResourceReader.readTextFileFromResource(context, R.raw.simple_vertex_shader);
@@ -85,11 +109,25 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
     public void onDrawFrame(GL10 gl10) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-
+        //　先画大矩形
         GLES20.glUniform4f(uColorLocation, 0.0f, 1.0f, 0.0f,
-                1.0f);//为 u_Color 这个 Uniform 设置颜色值 RGB 为 0 1 0 1 绿色
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 3);//画三角形
+                1.0f);//　为 u_Color 这个 Uniform 设置颜色值 RGB 为 0 1 0 1 绿色
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 10, 6);//画三角形
 
+        // 再画小矩形，若顺序颠倒，则会出现后面的大矩形覆盖掉前面的小矩形，导致小矩形不可见。
+        GLES20.glUniform4f(uColorLocation, 1.0f, 1.0f, 1.0f, 1.0f);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+
+        // 画横向平分线
+        GLES20.glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glDrawArrays(GLES20.GL_LINES, 6, 2);
+
+        // 画下方中心点
+        GLES20.glUniform4f(uColorLocation, 0.0f, 0.0f, 1.0f, 1.0f);
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 8, 1);
+
+        // 画上方中心点
+        GLES20.glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 9, 1);
     }
 }
