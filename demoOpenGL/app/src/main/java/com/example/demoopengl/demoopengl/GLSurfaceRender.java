@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Shader;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import com.example.demoopengl.demoopengl.util.LoggerConfig;
@@ -34,6 +35,10 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
     int aPostionLocation;
     int aColorLocation;
 
+    private static final String U_MATRIX = "u_Matrix";
+    final float[] projectionMatrix = new float[16];
+    int uMatrixLocation;
+
 
     private final String TAG = "GLSurfaceRender";
 
@@ -42,11 +47,11 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
             //Order of coordinates:X,Y,R,G,B
             //Triangle Fan
             0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-            -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
-            0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
-            0.5f, 0.5f, 0.7f, 0.7f, 0.7f,
-            -0.5f, 0.5f, 0.7f, 0.7f, 0.7f,
-            -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
+            -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
+            0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
+            0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
+            -0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
+            -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
 
             // 水平分割线
             -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
@@ -87,6 +92,7 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
         GLES20.glUseProgram(program); // a_Position
         aColorLocation = GLES20.glGetAttribLocation(program, A_COLOR);
         aPostionLocation = GLES20.glGetAttribLocation(program, A_POSITION);
+        uMatrixLocation = GLES20.glGetUniformLocation(program, U_MATRIX);
 
 
         vertexData.position(0);
@@ -101,13 +107,23 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
     }
 
     @Override
-    public void onSurfaceChanged(GL10 gl10, int i, int i1) {
-        GLES20.glViewport(0, 0, i, i1);
+    public void onSurfaceChanged(GL10 gl10, int width, int height) {
+        GLES20.glViewport(0, 0, width, height);
+
+        final float aspectRatio = width > height ? (1.0f * width / height) : (1.0f * height / width);
+        if (width > height) {
+            Matrix.orthoM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1, 1, -1, 1);
+        } else {
+            Matrix.orthoM(projectionMatrix, 0, -1, 1, -aspectRatio, aspectRatio, -1, 1);
+        }
     }
 
     @Override
     public void onDrawFrame(GL10 gl10) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+
+        GLES20.glUniformMatrix4fv(uMatrixLocation, 1, false, projectionMatrix, 0);
+
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN,0,6);    // cqd.note 此处的颜色渐变是如何做到的？
 
         GLES20.glDrawArrays(GLES20.GL_LINES,6,2);
