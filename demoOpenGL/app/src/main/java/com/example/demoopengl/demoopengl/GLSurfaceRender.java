@@ -24,42 +24,39 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
     private static final int BYTES_PER_FLOAT = 4;
     private int program;
 
-    private static final String U_COLOR = "u_Color";
+    private static final String A_COLOR = "a_Color";
     private static final String A_POSITION = "a_Position";
+
+    private static final int POSITION_COMOPNENT_COUNT = 2;
+    private static final int COLOR_COMPONENT_COUNT = 3;
+    private static final int STRIDE = (POSITION_COMOPNENT_COUNT+COLOR_COMPONENT_COUNT)*BYTES_PER_FLOAT;
+
     int aPostionLocation;
-    int uColorLocation;
+    int aColorLocation;
+
 
     private final String TAG = "GLSurfaceRender";
 
-    private static int POSITION_COMOPNENT_COUNT = 2;
-//    float [] tableVertices = {
-//            0.0f, 0.0f,
-//            1.0f, 1.0f,
-//            1.0f, 0f
-//    };
 
     float[] tableVertices = {
-            -0.5f, -0.5f,
-            0.5f, 0.5f,
-            -0.5f, 0.5f,
+            //Order of coordinates:X,Y,R,G,B
+            //Triangle Fan
+            0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
+            0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
+            0.5f, 0.5f, 0.7f, 0.7f, 0.7f,
+            -0.5f, 0.5f, 0.7f, 0.7f, 0.7f,
+            -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
 
-            -0.5f, -0.5f,
-            0.5f, -0.5f,
-            0.5f, 0.5f,
+            // 水平分割线
+            -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+            0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
 
-            -0.5f, 0f,
-            0.5f, 0f,
+            // 下中心点
+            0.0f, -0.25f, 0.0f, 0.0f, 1.0f,
 
-            0f, -0.25f,
-            0f, 0.25f,
-
-            -0.6f, -0.6f,
-            0.6f, 0.6f,
-            -0.6f, 0.6f,
-
-            -0.6f, -0.6f,
-            0.6f, -0.6f,
-            0.6f, 0.6f,
+            // 上中心点
+            0.0f, 0.25f, 1.0f, 0.0f, 0.0f
     };
 
     public GLSurfaceRender(Context context){
@@ -87,17 +84,20 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
             ShaderHelper.validateProgram(program);
         }
 
-
         GLES20.glUseProgram(program); // a_Position
-        uColorLocation = GLES20.glGetUniformLocation(program, U_COLOR);
+        aColorLocation = GLES20.glGetAttribLocation(program, A_COLOR);
         aPostionLocation = GLES20.glGetAttribLocation(program, A_POSITION);
 
 
         vertexData.position(0);
         GLES20.glVertexAttribPointer(aPostionLocation, POSITION_COMOPNENT_COUNT, GLES20.GL_FLOAT,
-        true, 0, vertexData); // 指定了渲染时索引值为 index 的顶点属性数组的数据格式和位置
+        true, STRIDE, vertexData); // 指定了渲染时索引值为 index 的顶点属性数组的数据格式和位置
         GLES20.glEnableVertexAttribArray(
                 aPostionLocation);// Enable or disable a generic vertex attribute array
+
+        vertexData.position(POSITION_COMOPNENT_COUNT);
+        GLES20.glVertexAttribPointer(aColorLocation,COLOR_COMPONENT_COUNT,GLES20.GL_FLOAT,true,STRIDE,vertexData);
+        GLES20.glEnableVertexAttribArray(aColorLocation);
     }
 
     @Override
@@ -108,26 +108,12 @@ public class GLSurfaceRender implements GLSurfaceView.Renderer{
     @Override
     public void onDrawFrame(GL10 gl10) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN,0,6);    // cqd.note 此处的颜色渐变是如何做到的？
 
-        //　先画大矩形
-        GLES20.glUniform4f(uColorLocation, 0.0f, 1.0f, 0.0f,
-                1.0f);//　为 u_Color 这个 Uniform 设置颜色值 RGB 为 0 1 0 1 绿色
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 10, 6);//画三角形
+        GLES20.glDrawArrays(GLES20.GL_LINES,6,2);
 
-        // 再画小矩形，若顺序颠倒，则会出现后面的大矩形覆盖掉前面的小矩形，导致小矩形不可见。
-        GLES20.glUniform4f(uColorLocation, 1.0f, 1.0f, 1.0f, 1.0f);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+        GLES20.glDrawArrays(GLES20.GL_POINTS,8,1);
 
-        // 画横向平分线
-        GLES20.glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
-        GLES20.glDrawArrays(GLES20.GL_LINES, 6, 2);
-
-        // 画下方中心点
-        GLES20.glUniform4f(uColorLocation, 0.0f, 0.0f, 1.0f, 1.0f);
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 8, 1);
-
-        // 画上方中心点
-        GLES20.glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 9, 1);
+        GLES20.glDrawArrays(GLES20.GL_POINTS,9,1);
     }
 }
