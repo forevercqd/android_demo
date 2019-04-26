@@ -30,8 +30,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!--一个页面启动另一个页面-->
     <Button
-        android:id="@+id/button"
+        android:id="@+id/send_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="sendMessage"
@@ -43,5 +44,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.732" />
+
+    <Button
+        android:id="@+id/click_test_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="clickTest"
+        app:layout_constraintLeft_toRightOf="@+id/send_button"
+        app:layout_constraintTop_toTopOf="@+id/send_button"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

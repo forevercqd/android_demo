@@ -2,16 +2,19 @@ package com.example.robert.demo_1;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     final static String TAG = "MainActivity";
 
     // Used to load the 'native-lib' library on application startup.
@@ -70,6 +73,10 @@ public class MainActivity extends AppCompatActivity {
         // Example of a call to a native method
         TextView tv = (TextView) findViewById(R.id.sample_text);
 
+        Button click_btn = findViewById(R.id.click_test_button);
+        click_btn.setOnClickListener(this);
+
+
         // cqd.note 此处是使用 native　层字符串;
 //        tv.setText(stringFromJNI());  // 如果此处打开则会使用 native　层定义的字符串　std::string hello = "Hello from C++";
         // 关于使用native层文本,具体见　add_library　中
@@ -88,6 +95,20 @@ public class MainActivity extends AppCompatActivity {
         String message = editText.getText().toString();
         intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.click_test_button:{
+                Toast.makeText(this, "click test ok", 20).show();
+                break;
+            }
+
+            default:
+                break;
+        }
 
     }
 }
