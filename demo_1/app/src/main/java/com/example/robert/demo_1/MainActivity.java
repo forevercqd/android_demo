@@ -19,6 +19,49 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
+    // catch 后续处理工作
+    public static boolean catchMethod() {
+        Log.d(TAG, "call catchMethod and return  --->>  ");
+        return false;
+    }
+
+    // finally后续处理工作
+    public static void finallyMethod() {
+        Log.d(TAG, "call finallyMethod and do something  --->>  ");
+    }
+
+    public static boolean catchTest() {
+        try {
+            int i = 10 / 0;          // 抛出 Exception，后续处理被拒绝
+            Log.d(TAG, "i vaule is : " + i);
+            return true;             // Exception 已经抛出，没有获得被执行的机会
+        } catch (Exception e) {
+            Log.d(TAG, " -- Exception --");
+            return catchMethod();    // Exception 抛出，获得了调用方法并返回方法值的机会
+        }
+        finally {
+            Log.d(TAG,"finally ok");
+        }
+
+//        Log.d(TAG,"catchTest, return normal");
+//        return true;
+    }
+
+
+    public static boolean catchFinallyTest2() {
+       try {
+           int i = 10 / 2;  // 不抛出 Exception
+           Log.d(TAG, "i vaule is : " + i);
+           return true;   // 获得被执行的机会，但执行需要在 finally 执行完成之后才能被执行
+       } catch (Exception e) {
+           Log.d(TAG, " -- Exception --");
+           return catchMethod();
+        }finally{
+            finallyMethod();
+            return false; // finally 中含有 return 语句，这个 return 将结束这个方法，不会在执行完之后再跳回 try 或 catch 继续执行，方法到此结束，返回 false
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
